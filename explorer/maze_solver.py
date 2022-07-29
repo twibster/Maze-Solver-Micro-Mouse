@@ -9,17 +9,17 @@ def where_to_go(where_am_i,orien,surr,maze):
 
 	current_vertex = maze[where_am_i[0]][where_am_i[1]]
 	surr = calibirate_orien(orien,surr)
-	update_vertex(current_vertex,surr)
+	update_vertex(current_vertex,surr,maze)
 	return
 
 def calibirate_orien(orien,surr):
 	'''this function rotates a tuple (surr) by a given number (orien) in order to align the micro-mouse with the maze'''
-	orien=-orien
+
 	while orien>=len(surr):
 	    orien = orien - len(surr)
 	return surr[-orien:] + surr[:-orien]
 
-def update_vertex(vertex,surr):
+def update_vertex(vertex,surr,maze):
 	'''this function updates each vertex with the correct information recieved from the micro-mouse
 	   whether it is a wall or not --We assumed earlier that all vertices in the maze are open (not walls)'''
 
@@ -27,15 +27,13 @@ def update_vertex(vertex,surr):
 	for i in range(4):
 		neighbor_vertex = getattr(vertex,directions[i])
 		if not (neighbor_vertex and surr[i]):
-			neighbor_vertex =None
-			# for neighbor in neighbor_vertex.neighbors():
-			# 	setattr(neighbor,directions[i],None)
+			if neighbor_vertex:
+				maze[neighbor_vertex.position[0]][neighbor_vertex.position[1]] = None
+	maze_connector(maze)
 
 def main():
 	maze = maze_creator(3,3)
 	maze_printer(maze)
-	where_to_go((1,1),0,(0,0,0,0),maze)
-	print(maze[1][1].neighbors())
 
 main()
 

@@ -1,3 +1,4 @@
+directions ={0:"right",1:"up",2:"left",3:"down"}
 ##### Start of DFS vertex object
 class vertex:
 	def __init__(self,position,maze):
@@ -14,6 +15,11 @@ class vertex:
 
 	def neighbors(self):
 		return self.right,self.up,self.left,self.down
+
+	def clear_neighbor(self,neighbor):
+		for i in range(4):
+			if getattr(self,directions[i])==neighbor:
+				setattr(self,directions[i],None)
 
 	def __repr__(self):
 		return f"vertex {self.position}"
@@ -40,7 +46,8 @@ def maze_connector(maze):
 	'''this function connects each vertex with its surrounding vertices'''
 	for row in range(len(maze)):
 		for col in range(len(maze)):
-			maze[row][col].connect()
+			vertex = maze[row][col]
+			vertex.connect() if vertex else None
 
 def maze_printer(maze):
 	for row in range(len(maze)):
