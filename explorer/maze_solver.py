@@ -9,10 +9,10 @@ def localize(where_am_i, orien, maze, start=False, surr=None):
        orien = from 0 to 4 (the absolute orientation is facing forward (0) (1 --> left) (2 --> backward) (3 --> right))
        surr = a tuple of the surrounding blocks (up,left,down,right) --> 1 if the block is clear (can move there),
         0 or None if a wall is detected.'''
+
     # where_am_i = calibrate_tuple(where_am_i,1) #reverse the x , y coordinates
   
     current_vertex = maze[where_am_i[0]][where_am_i[1]]
-    os.system('cls')
     maze_printer(maze, 0, current_vertex, orien=orien)
 
     if not current_vertex.visited:
@@ -35,11 +35,13 @@ def localize(where_am_i, orien, maze, start=False, surr=None):
                         print("\n4 numbers at least required")
                     else:
                         error = False    
+        os.system('cls')
         surr = calibrate_tuple(surr, orien)
         update_vertex(current_vertex, surr, maze)
-        dfs(current_vertex, maze)
+        dfs(current_vertex,orien, maze)
 
-    time.sleep(0.5)
+    time.sleep(1)
+    return orien
 
 
 def calibrate_tuple(to_rotate, factor):
@@ -66,38 +68,39 @@ def update_vertex(vertex, surr, maze):
     maze_connector(maze)  # reconnect the vertices
 
 
-def dfs(vertex,maze):
+def dfs(vertex,orien,maze):
     '''this function implements DFS to make sure each block is visited (it points to the next block to be visited)'''
     for neighbor in vertex.neighbors():
         if neighbor and (not neighbor.visited):
-            from_to(vertex, neighbor, maze)
+            from_to(vertex, neighbor,orien, maze)
     return vertex
 
 
-def from_to(location, destination, maze, from_dfs=1):
+def from_to(location, destination,orien, maze, from_dfs=1):
     global history
-    directions = {0: "in front of you", 1: "to your left", 2: "behind you", 3: "to your right"}
+    directions = ("in front of me","to my left","behind me","to my right")
     condition = destination in history[-1].neighbors() if from_dfs else destination in location.neighbors()
-    print(f"I was in {location} and moved to {destination}\n")
     if condition:
         direction = location.deal_neighbor(destination, 0)
+        print(f"I am in {location} and moving to {destination} which is {calibrate_tuple(directions, orien)[direction]} {orien}\n")
         return localize(destination.position, direction, maze)
 
     reversed_path = list(reversed(history[history.index(location):-1]))
     location = history[-1]
 
     for prev_vertex in reversed_path:
-        from_to(location, prev_vertex, maze, 0)
+        orien = from_to(location, prev_vertex,orien, maze, 0)
         location = prev_vertex
+
     history = history[:history.index(location)+1]
-    return from_to(location, destination, maze)
+    return from_to(location, destination,orien, maze)
 
 
 def main():
     global history
     history = []
     maze = maze_creator(9, 9)
-    localize((0, 1), 2, maze, True)  # initiate the first step
+    localize((8, 1), 0, maze, True)  # initiate the first step
     print("the maze has been explored or a loop messed me up\n")
     maze_printer(maze, 0)
 

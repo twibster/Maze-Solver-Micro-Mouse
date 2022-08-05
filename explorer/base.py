@@ -1,4 +1,6 @@
+import random
 from copy import deepcopy
+
 
 # Start of DFS vert object
 
@@ -19,7 +21,7 @@ class vertex:
         return 
 
     def neighbors(self):
-        return self.right,self.up,self.left,self.down
+        return random.sample([self.right, self.up, self.left, self.down],4)  # randomize the direction of movement
 
     def deal_neighbor(self, neighbor, command):
         '''this method does what the command says to the given neighbor:
