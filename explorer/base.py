@@ -12,6 +12,7 @@ class vertex:
         self.start = False
         self.visited = False
         self.updated = False
+        self.end = False
 
     def connect(self):
         self.right = self.maze[self.position[0]][self.position[1]+1] if self.position[1] < len(self.maze)-1 else None

@@ -27,7 +27,10 @@ def localize(where_am_i, orien, maze, start=False, surr=None):
             error = True
             while error:
                 try:
-                    surr = tuple(map(int, [ch for ch in input("Enter the surroundings: ")]))  # get the surroundings from the user (these will be obtained from the sensors later)    
+                    surr = tuple(map(int, [ch for ch in input("Enter the surroundings: ")]))  # get the surroundings from the user (these will be obtained from the sensors later)
+                    if len(surr) >4:
+                        current_vertex.end = True
+                        surr = surr[:-1]
                 except ValueError:
                     print("\nOnly numbers are accepted")
                 else:
@@ -35,7 +38,7 @@ def localize(where_am_i, orien, maze, start=False, surr=None):
                         print("\n4 numbers at least required")
                     else:
                         error = False    
-        os.system('cls')
+        # os.system('cls')
         surr = calibrate_tuple(surr, orien)
         update_vertex(current_vertex, surr, maze)
         dfs(current_vertex,orien, maze)
@@ -95,6 +98,7 @@ def from_to(location, destination,orien, maze, from_dfs=1):
     history = history[:history.index(location)+1]
     return from_to(location, destination,orien, maze)
 
+# def flood_fill(maze):
 
 def main():
     global history
