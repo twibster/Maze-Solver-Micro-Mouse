@@ -1,6 +1,6 @@
 import os
 import time
-from base import maze_creator, maze_connector, maze_printer
+from base import maze_creator, maze_connector, maze_printer,get_maze_end
 
 
 def localize(where_am_i, orien, maze, start=False, surr=None):
@@ -29,7 +29,7 @@ def localize(where_am_i, orien, maze, start=False, surr=None):
                 try:
                     surr = tuple(map(int, [ch for ch in input("Enter the surroundings: ")]))  # get the surroundings from the user (these will be obtained from the sensors later)
                     if len(surr) >4:
-                        current_vertex.end = True
+                        current_vertex.order = 0
                         surr = surr[:-1]
                 except ValueError:
                     print("\nOnly numbers are accepted")
@@ -38,7 +38,7 @@ def localize(where_am_i, orien, maze, start=False, surr=None):
                         print("\n4 numbers at least required")
                     else:
                         error = False    
-        # os.system('cls')
+        os.system('cls')
         surr = calibrate_tuple(surr, orien)
         update_vertex(current_vertex, surr, maze)
         dfs(current_vertex,orien, maze)
@@ -98,15 +98,23 @@ def from_to(location, destination,orien, maze, from_dfs=1):
     history = history[:history.index(location)+1]
     return from_to(location, destination,orien, maze)
 
-# def flood_fill(maze):
+def flood_fill(maze,vertex,order):
+    for neighbor in vertex.neighbors():
+        if neighbor:
+            if neighbor.order == None:
+                neighbor.order = order +1
+                flood_fill(maze,neighbor,neighbor.order)
+    return
 
 def main():
     global history
     history = []
     maze = maze_creator(9, 9)
-    localize((8, 1), 0, maze, True)  # initiate the first step
-    print("the maze has been explored or a loop messed me up\n")
-    maze_printer(maze, 0)
+    start = (8, 1)
+    localize(start, 0, maze, True)  # initiate the first step
+    print("Flood-filling the maze\n")
+    flood_fill(maze,get_maze_end(maze),0)
+    maze_printer(maze, 1)
 
 
 main()

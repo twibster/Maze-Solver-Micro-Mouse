@@ -12,7 +12,7 @@ class vertex:
         self.start = False
         self.visited = False
         self.updated = False
-        self.end = False
+        self.order = None
 
     def connect(self):
         self.right = self.maze[self.position[0]][self.position[1]+1] if self.position[1] < len(self.maze)-1 else None
@@ -75,16 +75,38 @@ def maze_connector(maze):
             vertex = maze[row][col]
             vertex.connect() if vertex else None
 
-
+def get_maze_end(maze):
+    '''this function returns the end vertix'''
+    for row in range(len(maze)):
+        for col in range(len(maze)):
+            vertex = maze[row][col]
+            if vertex:
+                if vertex.order==0:
+                    return vertex
+            
 def maze_printer(maze, status, current_vertex=None, orien=None):
     '''this functions prints the maze given 2 parameters:
     maze: the maze itself
-    status: 0 --> raw maze (the path is shown as vertices and the walls as None)
-    1 (default) --> cleared maze (the path is shown as empty place and the walls as'''
+    status: 0 --> weighted maze (the order of the vertices is shown (flood-fill) )
+    1 (default) --> cleared maze (the path is shown as empty place and the walls as #'''
 
     direction_symbol = {0: "|^", 1: "<-", 2: "||", 3: "->"}  # symbols to represent the orientation
     temp_maze = deepcopy(maze)
-    if not status:
+
+    if status:
+        for row in range(len(maze)):
+            for col in range(len(maze)):
+                vertex = maze[row][col]
+                if vertex:
+                    if len(str(vertex.order))==2:
+                        temp_maze[row][col] = str(vertex.order)
+                    elif len(str(vertex.order))==1:
+                        temp_maze[row][col] = f"{vertex.order} "
+                    else:
+                        temp_maze[row][col] = "# "
+                else:
+                    temp_maze[row][col] = "# "
+    else:
         for row in range(len(maze)):
             for col in range(len(maze)):
                 vertex = maze[row][col]
@@ -99,6 +121,7 @@ def maze_printer(maze, status, current_vertex=None, orien=None):
                         temp_maze[row][col] = "  "
                 else:
                     temp_maze[row][col] = "# "
+
 
     for row in range(len(maze)):
         print(temp_maze[row])
